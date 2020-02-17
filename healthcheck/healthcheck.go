@@ -192,7 +192,7 @@ func NewBackendConfig(options Options, backendName string) *BackendConfig {
 	return &BackendConfig{
 		Options:        options,
 		name:           backendName,
-		requestTimeout: 5 * time.Second,
+		requestTimeout: 10 * time.Second,
 	}
 }
 
