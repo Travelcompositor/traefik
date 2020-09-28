@@ -72,7 +72,7 @@ And here is another example with client certificate authentication:
 
 - We enable SSL on `https` by giving a certificate and a key.
 - One or several files containing Certificate Authorities in PEM format are added.
-- It is possible to have multiple CA:s in the same file or keep them in separate files.
+- It is possible to have multiple CA's in the same file or keep them in separate files.
 
 ### Frontends
 
@@ -452,6 +452,27 @@ If not, a new backend will be assigned.
     # Default: a sha1 (6 chars)
     #
     #  cookieName = "my_cookie"
+
+    # Customize secure option
+    #
+    # Optional
+    # Default: false
+    #
+    #  secure = true
+
+    # Customize http only option
+    #
+    # Optional
+    # Default: false
+    #
+    #  httpOnly = true
+
+    # Customize same site option.
+    # Can be: "none", "lax", "strict"
+    #
+    # Optional
+    #
+    #  sameSite = "none"
 ```
 
 The deprecated way:
@@ -631,7 +652,7 @@ docker run traefik[:version] --help
 
 ### Command: bug
 
-Here is the easiest way to submit a pre-filled issue on [Traefik GitHub](https://github.com/containous/traefik).
+Here is the easiest way to submit a pre-filled issue on [Traefik GitHub](https://github.com/traefik/traefik).
 
 ```bash
 traefik bug
@@ -660,7 +681,7 @@ OK: http://:8082/ping
 
 **This feature is disabled by default.**
 
-You can read the public proposal on this topic [here](https://github.com/containous/traefik/issues/2369).
+You can read the public proposal on this topic [here](https://github.com/traefik/traefik/issues/2369).
 
 ### Why ?
 
@@ -746,7 +767,7 @@ Once a day (the first call begins 10 minutes after the start of Traefik), we col
 
 ### Show me the code !
 
-If you want to dig into more details, here is the source code of the collecting system: [collector.go](https://github.com/containous/traefik/blob/v1.7/collector/collector.go)
+If you want to dig into more details, here is the source code of the collecting system: [collector.go](https://github.com/traefik/traefik/blob/v1.7/collector/collector.go)
 
 By default we anonymize all configuration fields, except fields tagged with `export=true`.
 

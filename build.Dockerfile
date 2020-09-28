@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine
+FROM golang:1.14-alpine
 
 RUN apk --update upgrade \
     && apk --no-cache --no-progress add git mercurial bash gcc musl-dev curl tar ca-certificates tzdata \
@@ -27,5 +27,5 @@ RUN mkdir -p /usr/local/bin \
     && curl -fL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz \
     | tar -xzC /usr/local/bin --transform 's#^.+/##x'
 
-WORKDIR /go/src/github.com/containous/traefik
-COPY . /go/src/github.com/containous/traefik
+WORKDIR /go/src/github.com/traefik/traefik
+COPY . /go/src/github.com/traefik/traefik

@@ -217,7 +217,7 @@ More information about Docker's security:
 
 !!! note "Improved Security"
 
-    [TraefikEE](https://containo.us/traefikee) solves this problem by separating the control plane (connected to Docker) and the data plane (handling the requests).
+    [Traefik Enterprise](https://traefik.io/traefik-enterprise/) solves this problem by separating the control plane (connected to Docker) and the data plane (handling the requests).
 
 Another possible workaround is to expose the Docker socket over TCP, instead of the default Unix socket file.
 It allows different implementation levels of the [AAA (Authentication, Authorization, Accounting) concepts](https://en.wikipedia.org/wiki/AAA_(computer_security)), depending on your security assessment:
@@ -236,7 +236,7 @@ It allows different implementation levels of the [AAA (Authentication, Authoriza
 
 Use the following ressources to get started:
 
-- [Traefik issue GH-4174 about security with Docker socket](https://github.com/containous/traefik/issues/4174)
+- [Traefik issue GH-4174 about security with Docker socket](https://github.com/traefik/traefik/issues/4174)
 - [Inspecting Docker Activity with Socat](https://developers.redhat.com/blog/2015/02/25/inspecting-docker-activity-with-socat/)
 - [Letting Traefik run on Worker Nodes](https://blog.mikesir87.io/2018/07/letting-traefik-run-on-worker-nodes/)
 - [Docker Socket Proxy from Tecnativa](https://github.com/Tecnativa/docker-socket-proxy)
@@ -313,6 +313,9 @@ Labels can be used on containers to override default behavior.
 | `traefik.backend.loadbalancer.method=drr`                               | Overrides the default `wrr` load balancer algorithm                                                                                                                                                                              |
 | `traefik.backend.loadbalancer.stickiness=true`                          | Enables backend sticky sessions                                                                                                                                                                                                  |
 | `traefik.backend.loadbalancer.stickiness.cookieName=NAME`               | Sets the cookie name manually for sticky sessions                                                                                                                                                                                |
+| `traefik.backend.loadbalancer.stickiness.secure=true`                   | Sets secure cookie option for sticky sessions.                                                                                                                                                                                   |
+| `traefik.backend.loadbalancer.stickiness.httpOnly=true`                 | Sets http only cookie option for sticky sessions.                                                                                                                                                                                |
+| `traefik.backend.loadbalancer.stickiness.sameSite=none`                 | Sets same site cookie option for sticky sessions. (`none`, `lax`, `strict`)                                                                                                                                                      |
 | `traefik.backend.loadbalancer.sticky=true`                              | Enables backend sticky sessions (DEPRECATED)                                                                                                                                                                                     |
 | `traefik.backend.loadbalancer.swarm=true`                               | Uses Swarm's inbuilt load balancer (only relevant under Swarm Mode) [3].                                                                                                                                                         |
 | `traefik.backend.maxconn.amount=10`                                     | Sets a maximum number of connections to the backend.<br>Must be used in conjunction with the below label to take effect.                                                                                                         |
@@ -412,7 +415,7 @@ It also means that Traefik will manipulate only one backend, not one backend per
 | `traefik.frontend.headers.SSLTemporaryRedirect=true`     | Forces the frontend to redirect to SSL if a non-SSL request is sent, but by sending a 302 instead of a 301.                                                                                         |
 | `traefik.frontend.headers.SSLHost=HOST`                  | This setting configures the hostname that redirects will be based on. Default is "", which is the same host as the request.                                                                         |
 | `traefik.frontend.headers.SSLForceHost=true`             | If `SSLForceHost` is `true` and `SSLHost` is set, requests will be forced to use `SSLHost` even the ones that are already using SSL. Default is false.                                              |
-| `traefik.frontend.headers.SSLProxyHeaders=EXPR`          | Header combinations that would signify a proper SSL Request (Such as `X-Forwarded-For:https`).<br>Format:  <code>HEADER:value&vert;&vert;HEADER2:value2</code>                                      |
+| `traefik.frontend.headers.SSLProxyHeaders=EXPR`          | Header combinations that would signify a proper SSL Request (Such as `X-Forwarded-Proto:https`).<br>Format:  <code>HEADER:value&vert;&vert;HEADER2:value2</code>                                      |
 | `traefik.frontend.headers.STSSeconds=315360000`          | Sets the max-age of the STS header.                                                                                                                                                                 |
 | `traefik.frontend.headers.STSIncludeSubdomains=true`     | Adds the `IncludeSubdomains` section of the STS  header.                                                                                                                                            |
 | `traefik.frontend.headers.STSPreload=true`               | Adds the preload flag to the STS  header.                                                                                                                                                           |

@@ -80,7 +80,7 @@
 
 [[constraint]]
   name = "github.com/containous/traefik-extra-service-fabric"
-  version = "v1.5.0"
+  version = "1.6.0"
 
 [[constraint]]
   name = "github.com/coreos/go-systemd"
@@ -175,7 +175,7 @@
   version = "0.1.0"
 
 [[constraint]]
-  branch = "master"
+  version = "v1.1.0"
   name = "github.com/vulcand/oxy"
 
 [[constraint]]

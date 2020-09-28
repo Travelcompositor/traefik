@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/containous/flaeg"
-	"github.com/containous/traefik/provider/label"
-	"github.com/containous/traefik/types"
 	"github.com/gambol99/go-marathon"
 	"github.com/stretchr/testify/assert"
+	"github.com/traefik/traefik/provider/label"
+	"github.com/traefik/traefik/types"
 )
 
 func TestGetConfigurationAPIErrors(t *testing.T) {
@@ -369,6 +369,9 @@ func TestBuildConfiguration(t *testing.T) {
 					withLabel(label.TraefikBackendLoadBalancerSticky, "true"),
 					withLabel(label.TraefikBackendLoadBalancerStickiness, "true"),
 					withLabel(label.TraefikBackendLoadBalancerStickinessCookieName, "chocolate"),
+					withLabel(label.TraefikBackendLoadBalancerStickinessSecure, "true"),
+					withLabel(label.TraefikBackendLoadBalancerStickinessHTTPOnly, "true"),
+					withLabel(label.TraefikBackendLoadBalancerStickinessSameSite, "none"),
 					withLabel(label.TraefikBackendMaxConnAmount, "666"),
 					withLabel(label.TraefikBackendMaxConnExtractorFunc, "client.ip"),
 					withLabel(label.TraefikBackendBufferingMaxResponseBodyBytes, "10485760"),
@@ -613,6 +616,9 @@ func TestBuildConfiguration(t *testing.T) {
 						Sticky: true,
 						Stickiness: &types.Stickiness{
 							CookieName: "chocolate",
+							Secure:     true,
+							HTTPOnly:   true,
+							SameSite:   "none",
 						},
 					},
 					MaxConn: &types.MaxConn{

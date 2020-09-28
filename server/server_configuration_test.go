@@ -10,15 +10,15 @@ import (
 
 	"github.com/containous/flaeg"
 	"github.com/containous/mux"
-	"github.com/containous/traefik/configuration"
-	"github.com/containous/traefik/healthcheck"
-	"github.com/containous/traefik/middlewares"
-	"github.com/containous/traefik/rules"
-	th "github.com/containous/traefik/testhelpers"
-	"github.com/containous/traefik/tls"
-	"github.com/containous/traefik/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/traefik/traefik/configuration"
+	"github.com/traefik/traefik/healthcheck"
+	"github.com/traefik/traefik/middlewares"
+	"github.com/traefik/traefik/rules"
+	th "github.com/traefik/traefik/testhelpers"
+	"github.com/traefik/traefik/tls"
+	"github.com/traefik/traefik/types"
 	"github.com/vulcand/oxy/roundrobin"
 )
 
@@ -304,9 +304,11 @@ func TestThrottleProviderConfigReload(t *testing.T) {
 		}
 	}()
 
-	// publish 5 new configs, one new config each 10 milliseconds
+	// publish 5 new and different configs, one new config each 10 milliseconds
 	for i := 0; i < 5; i++ {
-		providerConfig <- types.ConfigMessage{}
+		providerConfig <- types.ConfigMessage{
+			ProviderName: fmt.Sprintf("test-%d", i),
+		}
 		time.Sleep(10 * time.Millisecond)
 	}
 

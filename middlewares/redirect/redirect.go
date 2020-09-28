@@ -10,14 +10,14 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/containous/traefik/configuration"
-	"github.com/containous/traefik/middlewares"
+	"github.com/traefik/traefik/configuration"
+	"github.com/traefik/traefik/middlewares"
 	"github.com/urfave/negroni"
 	"github.com/vulcand/oxy/utils"
 )
 
 const (
-	defaultRedirectRegex = `^(?:https?:\/\/)?([\w\._-]+)(?::\d+)?(.*)$`
+	defaultRedirectRegex = `^(?:https?:\/\/)?(\[[\w:.]+\]|[\w\._-]+)(?::\d+)?(.*)$`
 )
 
 // NewEntryPointHandler create a new redirection handler base on entry point

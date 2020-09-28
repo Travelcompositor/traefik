@@ -19,22 +19,22 @@ import (
 
 	"github.com/armon/go-proxyproto"
 	"github.com/containous/mux"
-	"github.com/containous/traefik/cluster"
-	"github.com/containous/traefik/configuration"
-	"github.com/containous/traefik/configuration/router"
-	"github.com/containous/traefik/h2c"
-	"github.com/containous/traefik/log"
-	"github.com/containous/traefik/metrics"
-	"github.com/containous/traefik/middlewares"
-	"github.com/containous/traefik/middlewares/accesslog"
-	"github.com/containous/traefik/middlewares/tracing"
-	"github.com/containous/traefik/provider"
-	"github.com/containous/traefik/safe"
-	traefiktls "github.com/containous/traefik/tls"
-	"github.com/containous/traefik/types"
-	"github.com/containous/traefik/whitelist"
 	"github.com/go-acme/lego/challenge/tlsalpn01"
 	"github.com/sirupsen/logrus"
+	"github.com/traefik/traefik/cluster"
+	"github.com/traefik/traefik/configuration"
+	"github.com/traefik/traefik/configuration/router"
+	"github.com/traefik/traefik/h2c"
+	"github.com/traefik/traefik/log"
+	"github.com/traefik/traefik/metrics"
+	"github.com/traefik/traefik/middlewares"
+	"github.com/traefik/traefik/middlewares/accesslog"
+	"github.com/traefik/traefik/middlewares/tracing"
+	"github.com/traefik/traefik/provider"
+	"github.com/traefik/traefik/safe"
+	traefiktls "github.com/traefik/traefik/tls"
+	"github.com/traefik/traefik/types"
+	"github.com/traefik/traefik/whitelist"
 	"github.com/urfave/negroni"
 )
 
@@ -218,7 +218,10 @@ func NewServer(globalConfiguration configuration.GlobalConfiguration, provider p
 		log.Errorf("failed to create HTTP transport: %v", err)
 	}
 
-	server.defaultForwardingRoundTripper = transport
+	server.defaultForwardingRoundTripper, err = newSmartRoundTripper(transport)
+	if err != nil {
+		log.Errorf("Failed to create HTTP transport: %v", err)
+	}
 
 	server.tracingMiddleware = globalConfiguration.Tracing
 	if server.tracingMiddleware != nil && server.tracingMiddleware.Backend != "" {
@@ -497,6 +500,12 @@ func (s *Server) createTLSConfig(entryPointName string, tlsOption *traefiktls.TL
 		config.Certificates = []tls.Certificate{}
 	}
 
+	// workaround for users who used GODEBUG to activate TLS1.3
+	config.MaxVersion = tls.VersionTLS12
+	if strings.Contains(os.Getenv("GODEBUG"), "tls13=1") {
+		config.MaxVersion = tls.VersionTLS13
+	}
+
 	// Set the minimum TLS version if set in the config TOML
 	if minConst, exists := traefiktls.MinVersion[s.entryPoints[entryPointName].Configuration.TLS.MinVersion]; exists {
 		config.PreferServerCipherSuites = true
@@ -505,7 +514,7 @@ func (s *Server) createTLSConfig(entryPointName string, tlsOption *traefiktls.TL
 
 	// Set the list of CipherSuites if set in the config TOML
 	if s.entryPoints[entryPointName].Configuration.TLS.CipherSuites != nil {
-		// if our list of CipherSuites is defined in the entrypoint config, we can re-initilize the suites list as empty
+		// if our list of CipherSuites is defined in the entrypoint config, we can re-initialize the suites list as empty
 		config.CipherSuites = make([]uint16, 0)
 		for _, cipher := range s.entryPoints[entryPointName].Configuration.TLS.CipherSuites {
 			if cipherConst, exists := traefiktls.CipherSuites[cipher]; exists {

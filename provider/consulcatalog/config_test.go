@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/containous/flaeg"
-	"github.com/containous/traefik/provider/label"
-	"github.com/containous/traefik/types"
 	"github.com/hashicorp/consul/api"
 	"github.com/stretchr/testify/assert"
+	"github.com/traefik/traefik/provider/label"
+	"github.com/traefik/traefik/types"
 )
 
 func TestProviderBuildConfiguration(t *testing.T) {
@@ -254,7 +254,8 @@ func TestProviderBuildConfiguration(t *testing.T) {
 					},
 				},
 			},
-		}, {
+		},
+		{
 			desc: "Should build config with a digest auth",
 			nodes: []catalogUpdate{
 				{
@@ -416,6 +417,9 @@ func TestProviderBuildConfiguration(t *testing.T) {
 							label.TraefikBackendLoadBalancerSticky + "=true",
 							label.TraefikBackendLoadBalancerStickiness + "=true",
 							label.TraefikBackendLoadBalancerStickinessCookieName + "=chocolate",
+							label.TraefikBackendLoadBalancerStickinessSecure + "=true",
+							label.TraefikBackendLoadBalancerStickinessHTTPOnly + "=true",
+							label.TraefikBackendLoadBalancerStickinessSameSite + "=none",
 							label.TraefikBackendMaxConnAmount + "=666",
 							label.TraefikBackendMaxConnExtractorFunc + "=client.ip",
 							label.TraefikBackendBufferingMaxResponseBodyBytes + "=10485760",
@@ -700,6 +704,9 @@ func TestProviderBuildConfiguration(t *testing.T) {
 						Sticky: true,
 						Stickiness: &types.Stickiness{
 							CookieName: "chocolate",
+							Secure:     true,
+							HTTPOnly:   true,
+							SameSite:   "none",
 						},
 					},
 					MaxConn: &types.MaxConn{

@@ -5,11 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/containous/traefik/configuration"
-	"github.com/containous/traefik/testhelpers"
-	"github.com/containous/traefik/tls"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/traefik/traefik/configuration"
+	"github.com/traefik/traefik/testhelpers"
+	"github.com/traefik/traefik/tls"
 )
 
 func TestNewEntryPointHandler(t *testing.T) {
@@ -83,6 +83,34 @@ func TestNewEntryPointHandler(t *testing.T) {
 			entryPoint:    &configuration.EntryPoint{Address: ":foo", TLS: &tls.TLS{}},
 			url:           "http://foo:80",
 			errorExpected: true,
+		},
+		{
+			desc:           "IPV6 HTTP to HTTP",
+			entryPoint:     &configuration.EntryPoint{Address: ":8080"},
+			url:            "http://[::1]",
+			expectedURL:    "http://[::1]:8080",
+			expectedStatus: http.StatusFound,
+		},
+		{
+			desc:           "IPV6 HTTP to HTTPS",
+			entryPoint:     &configuration.EntryPoint{Address: ":443", TLS: &tls.TLS{}},
+			url:            "http://[::1]",
+			expectedURL:    "https://[::1]:443",
+			expectedStatus: http.StatusFound,
+		},
+		{
+			desc:           "IPV6 HTTP with port 80 to HTTP",
+			entryPoint:     &configuration.EntryPoint{Address: ":8080"},
+			url:            "http://[::1]:80",
+			expectedURL:    "http://[::1]:8080",
+			expectedStatus: http.StatusFound,
+		},
+		{
+			desc:           "IPV6 HTTP with port 80 to HTTPS",
+			entryPoint:     &configuration.EntryPoint{Address: ":443", TLS: &tls.TLS{}},
+			url:            "http://[::1]:80",
+			expectedURL:    "https://[::1]:443",
+			expectedStatus: http.StatusFound,
 		},
 	}
 

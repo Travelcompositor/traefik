@@ -17,13 +17,13 @@ import (
 
 	"github.com/cenk/backoff"
 	"github.com/containous/flaeg"
-	"github.com/containous/traefik/job"
-	"github.com/containous/traefik/log"
-	"github.com/containous/traefik/provider"
-	"github.com/containous/traefik/provider/label"
-	"github.com/containous/traefik/safe"
-	"github.com/containous/traefik/tls"
-	"github.com/containous/traefik/types"
+	"github.com/traefik/traefik/job"
+	"github.com/traefik/traefik/log"
+	"github.com/traefik/traefik/provider"
+	"github.com/traefik/traefik/provider/label"
+	"github.com/traefik/traefik/safe"
+	"github.com/traefik/traefik/tls"
+	"github.com/traefik/traefik/types"
 	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
@@ -1151,14 +1151,16 @@ func getLoadBalancer(service *corev1.Service) *types.LoadBalancer {
 }
 
 func getStickiness(service *corev1.Service) *types.Stickiness {
-	if getBoolValue(service.Annotations, annotationKubernetesAffinity, false) {
-		stickiness := &types.Stickiness{}
-		if cookieName := getStringValue(service.Annotations, annotationKubernetesSessionCookieName, ""); len(cookieName) > 0 {
-			stickiness.CookieName = cookieName
-		}
-		return stickiness
+	if !getBoolValue(service.Annotations, annotationKubernetesAffinity, false) {
+		return nil
 	}
-	return nil
+
+	return &types.Stickiness{
+		CookieName: getStringValue(service.Annotations, annotationKubernetesSessionCookieName, ""),
+		Secure:     getBoolValue(service.Annotations, annotationKubernetesSessionSecure, false),
+		HTTPOnly:   getBoolValue(service.Annotations, annotationKubernetesSessionHTTPOnly, false),
+		SameSite:   getStringValue(service.Annotations, annotationKubernetesSessionSameSite, ""),
+	}
 }
 
 func getHeader(i *extensionsv1beta1.Ingress) *types.Headers {

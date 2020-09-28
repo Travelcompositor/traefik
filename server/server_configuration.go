@@ -13,19 +13,19 @@ import (
 
 	"github.com/containous/flaeg/parse"
 	"github.com/containous/mux"
-	"github.com/containous/traefik/configuration"
-	"github.com/containous/traefik/healthcheck"
-	"github.com/containous/traefik/hostresolver"
-	"github.com/containous/traefik/log"
-	"github.com/containous/traefik/metrics"
-	"github.com/containous/traefik/middlewares"
-	"github.com/containous/traefik/middlewares/pipelining"
-	"github.com/containous/traefik/rules"
-	traefiktls "github.com/containous/traefik/tls"
-	"github.com/containous/traefik/tls/generate"
-	"github.com/containous/traefik/types"
 	"github.com/eapache/channels"
 	"github.com/sirupsen/logrus"
+	"github.com/traefik/traefik/configuration"
+	"github.com/traefik/traefik/healthcheck"
+	"github.com/traefik/traefik/hostresolver"
+	"github.com/traefik/traefik/log"
+	"github.com/traefik/traefik/metrics"
+	"github.com/traefik/traefik/middlewares"
+	"github.com/traefik/traefik/middlewares/pipelining"
+	"github.com/traefik/traefik/rules"
+	traefiktls "github.com/traefik/traefik/tls"
+	"github.com/traefik/traefik/tls/generate"
+	"github.com/traefik/traefik/types"
 	"github.com/urfave/negroni"
 	"github.com/vulcand/oxy/forward"
 )
@@ -237,11 +237,17 @@ func (s *Server) buildForwarder(entryPointName string, entryPoint *configuration
 		}
 	}
 
+	var tlsConfig *tls.Config
+	if smartRt, ok := roundTripper.(*smartRoundTripper); ok {
+		tlsConfig = smartRt.GetTLSClientConfig()
+	}
+
 	var fwd http.Handler
 	fwd, err = forward.New(
 		forward.Stream(true),
 		forward.PassHostHeader(frontend.PassHostHeader),
 		forward.RoundTripper(roundTripper),
+		forward.WebsocketTLSClientConfig(tlsConfig),
 		forward.Rewriter(rewriter),
 		forward.ResponseModifier(responseModifier),
 		forward.BufferPool(s.bufferPool),
@@ -303,7 +309,6 @@ func buildServerRoute(serverEntryPoint *serverEntryPoint, frontendName string, f
 func (s *Server) preLoadConfiguration(configMsg types.ConfigMessage) {
 	providersThrottleDuration := time.Duration(s.globalConfiguration.ProvidersThrottleDuration)
 	s.defaultConfigurationValues(configMsg.Configuration)
-	currentConfigurations := s.currentConfigurations.Get().(types.Configurations)
 
 	if log.GetLevel() == logrus.DebugLevel {
 		jsonConf, _ := json.Marshal(configMsg.Configuration)
@@ -312,11 +317,6 @@ func (s *Server) preLoadConfiguration(configMsg types.ConfigMessage) {
 
 	if configMsg.Configuration == nil || configMsg.Configuration.Backends == nil && configMsg.Configuration.Frontends == nil && configMsg.Configuration.TLS == nil {
 		log.Infof("Skipping empty Configuration for provider %s", configMsg.ProviderName)
-		return
-	}
-
-	if reflect.DeepEqual(currentConfigurations[configMsg.ProviderName], configMsg.Configuration) {
-		log.Infof("Skipping same configuration for provider %s", configMsg.ProviderName)
 		return
 	}
 
@@ -455,11 +455,17 @@ func (s *Server) throttleProviderConfigReload(throttle time.Duration, publish ch
 		}
 	})
 
+	var previousConfig types.ConfigMessage
 	for {
 		select {
 		case <-stop:
 			return
 		case nextConfig := <-in:
+			if reflect.DeepEqual(previousConfig, nextConfig) {
+				log.Infof("Skipping same configuration for provider %s", nextConfig.ProviderName)
+				continue
+			}
+			previousConfig = nextConfig
 			ring.In() <- nextConfig
 		}
 	}

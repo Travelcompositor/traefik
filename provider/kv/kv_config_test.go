@@ -8,11 +8,11 @@ import (
 
 	"github.com/abronan/valkeyrie/store"
 	"github.com/containous/flaeg"
-	"github.com/containous/traefik/provider/label"
-	"github.com/containous/traefik/tls"
-	"github.com/containous/traefik/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/traefik/traefik/provider/label"
+	"github.com/traefik/traefik/tls"
+	"github.com/traefik/traefik/types"
 )
 
 func aKVPair(key string, value string) *store.KVPair {
@@ -260,6 +260,9 @@ func TestProviderBuildConfiguration(t *testing.T) {
 					withPair(pathBackendLoadBalancerSticky, "true"),
 					withPair(pathBackendLoadBalancerStickiness, "true"),
 					withPair(pathBackendLoadBalancerStickinessCookieName, "tomate"),
+					withPair(pathBackendLoadBalancerStickinessSecure, "true"),
+					withPair(pathBackendLoadBalancerStickinessHTTPOnly, "true"),
+					withPair(pathBackendLoadBalancerStickinessSameSite, "none"),
 					withPair(pathBackendHealthCheckScheme, "http"),
 					withPair(pathBackendHealthCheckPath, "/health"),
 					withPair(pathBackendHealthCheckPort, "80"),
@@ -389,6 +392,9 @@ func TestProviderBuildConfiguration(t *testing.T) {
 							Sticky: true,
 							Stickiness: &types.Stickiness{
 								CookieName: "tomate",
+								Secure:     true,
+								HTTPOnly:   true,
+								SameSite:   "none",
 							},
 						},
 						MaxConn: &types.MaxConn{
@@ -1949,12 +1955,18 @@ func TestProviderGetLoadBalancer(t *testing.T) {
 					withPair(pathBackendLoadBalancerMethod, "drr"),
 					withPair(pathBackendLoadBalancerSticky, "true"),
 					withPair(pathBackendLoadBalancerStickiness, "true"),
-					withPair(pathBackendLoadBalancerStickinessCookieName, "aubergine"))),
+					withPair(pathBackendLoadBalancerStickinessCookieName, "aubergine"),
+					withPair(pathBackendLoadBalancerStickinessSecure, "true"),
+					withPair(pathBackendLoadBalancerStickinessHTTPOnly, "true"),
+					withPair(pathBackendLoadBalancerStickinessSameSite, "none"))),
 			expected: &types.LoadBalancer{
 				Method: "drr",
 				Sticky: true,
 				Stickiness: &types.Stickiness{
 					CookieName: "aubergine",
+					Secure:     true,
+					HTTPOnly:   true,
+					SameSite:   "none",
 				},
 			},
 		},

@@ -14,10 +14,10 @@ import (
 	"github.com/abronan/valkeyrie/store"
 	"github.com/containous/flaeg"
 	"github.com/containous/mux"
-	"github.com/containous/traefik/log"
-	traefiktls "github.com/containous/traefik/tls"
 	"github.com/mitchellh/hashstructure"
 	"github.com/ryanuber/go-glob"
+	"github.com/traefik/traefik/log"
+	traefiktls "github.com/traefik/traefik/tls"
 )
 
 // Backend holds backend configuration.
@@ -52,6 +52,9 @@ type LoadBalancer struct {
 // Stickiness holds sticky session configuration.
 type Stickiness struct {
 	CookieName string `json:"cookieName,omitempty"`
+	Secure     bool   `json:"secure,omitempty"`
+	HTTPOnly   bool   `json:"httpOnly,omitempty"`
+	SameSite   string `json:"sameSite,omitempty"`
 }
 
 // CircuitBreaker holds circuit breaker configuration.

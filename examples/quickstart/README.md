@@ -2,7 +2,7 @@
 
 In this quickstart, we'll use [Docker compose](https://docs.docker.com/compose) to create our demo infrastructure.
 
-To save some time, you can clone [Traefik's repository](https://github.com/containous/traefik) and use the quickstart files located in the [examples/quickstart](https://github.com/containous/traefik/tree/v1.7/examples/quickstart/) directory.
+To save some time, you can clone [Traefik's repository](https://github.com/traefik/traefik) and use the quickstart files located in the [examples/quickstart](https://github.com/traefik/traefik/tree/v1.7/examples/quickstart/) directory.
 
 ### 1 — Launch Traefik — Tell It to Listen to Docker
 
@@ -101,7 +101,7 @@ IP: 172.27.0.4
 
 ### 4 — Enjoy Traefik's Magic
 
-Now that you have a basic understanding of how Traefik can automatically create the routes to your services and load balance them, it might be time to dive into [the documentation](https://docs.traefik.io/v1.7/) and let Traefik work for you!
-Whatever your infrastructure is, there is probably [an available Traefik backend](https://docs.traefik.io/v1.7/#supported-backends) that will do the job.
+Now that you have a basic understanding of how Traefik can automatically create the routes to your services and load balance them, it might be time to dive into [the documentation](https://doc.traefik.io/traefik/v1.7/) and let Traefik work for you!
+Whatever your infrastructure is, there is probably [an available Traefik backend](https://doc.traefik.io/traefik/v1.7/#supported-backends) that will do the job.
 
-Our recommendation would be to see for yourself how simple it is to enable HTTPS with [Traefik's let's encrypt integration](https://docs.traefik.io/v1.7/user-guide/examples/#lets-encrypt-support) using the dedicated [user guide](https://docs.traefik.io/v1.7/user-guide/docker-and-lets-encrypt/).
+Our recommendation would be to see for yourself how simple it is to enable HTTPS with [Traefik's let's encrypt integration](https://doc.traefik.io/traefik/v1.7/user-guide/examples/#lets-encrypt-support) using the dedicated [user guide](https://doc.traefik.io/traefik/v1.7/user-guide/docker-and-lets-encrypt/).

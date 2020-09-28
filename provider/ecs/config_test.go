@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/containous/flaeg"
-	"github.com/containous/traefik/provider/label"
-	"github.com/containous/traefik/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/traefik/traefik/provider/label"
+	"github.com/traefik/traefik/types"
 )
 
 func TestBuildConfiguration(t *testing.T) {
@@ -353,6 +353,9 @@ func TestBuildConfiguration(t *testing.T) {
 						label.TraefikBackendLoadBalancerSticky:               aws.String("true"),
 						label.TraefikBackendLoadBalancerStickiness:           aws.String("true"),
 						label.TraefikBackendLoadBalancerStickinessCookieName: aws.String("chocolate"),
+						label.TraefikBackendLoadBalancerStickinessSecure:     aws.String("true"),
+						label.TraefikBackendLoadBalancerStickinessHTTPOnly:   aws.String("true"),
+						label.TraefikBackendLoadBalancerStickinessSameSite:   aws.String("none"),
 						label.TraefikBackendMaxConnAmount:                    aws.String("666"),
 						label.TraefikBackendMaxConnExtractorFunc:             aws.String("client.ip"),
 						label.TraefikBackendBufferingMaxResponseBodyBytes:    aws.String("10485760"),
@@ -475,6 +478,9 @@ func TestBuildConfiguration(t *testing.T) {
 							Sticky: true,
 							Stickiness: &types.Stickiness{
 								CookieName: "chocolate",
+								Secure:     true,
+								HTTPOnly:   true,
+								SameSite:   "none",
 							},
 						},
 						MaxConn: &types.MaxConn{
@@ -662,6 +668,9 @@ func TestBuildConfiguration(t *testing.T) {
 						label.TraefikBackendLoadBalancerSticky:               aws.String("true"),
 						label.TraefikBackendLoadBalancerStickiness:           aws.String("true"),
 						label.TraefikBackendLoadBalancerStickinessCookieName: aws.String("chocolate"),
+						label.TraefikBackendLoadBalancerStickinessSecure:     aws.String("true"),
+						label.TraefikBackendLoadBalancerStickinessHTTPOnly:   aws.String("true"),
+						label.TraefikBackendLoadBalancerStickinessSameSite:   aws.String("none"),
 						label.TraefikBackendMaxConnAmount:                    aws.String("666"),
 						label.TraefikBackendMaxConnExtractorFunc:             aws.String("client.ip"),
 						label.TraefikBackendBufferingMaxResponseBodyBytes:    aws.String("10485760"),
@@ -750,6 +759,9 @@ func TestBuildConfiguration(t *testing.T) {
 						label.TraefikBackendLoadBalancerSticky:               aws.String("true"),
 						label.TraefikBackendLoadBalancerStickiness:           aws.String("true"),
 						label.TraefikBackendLoadBalancerStickinessCookieName: aws.String("chocolate"),
+						label.TraefikBackendLoadBalancerStickinessSecure:     aws.String("true"),
+						label.TraefikBackendLoadBalancerStickinessHTTPOnly:   aws.String("true"),
+						label.TraefikBackendLoadBalancerStickinessSameSite:   aws.String("none"),
 						label.TraefikBackendMaxConnAmount:                    aws.String("666"),
 						label.TraefikBackendMaxConnExtractorFunc:             aws.String("client.ip"),
 						label.TraefikBackendBufferingMaxResponseBodyBytes:    aws.String("10485760"),
@@ -839,6 +851,9 @@ func TestBuildConfiguration(t *testing.T) {
 							Sticky: true,
 							Stickiness: &types.Stickiness{
 								CookieName: "chocolate",
+								Secure:     true,
+								HTTPOnly:   true,
+								SameSite:   "none",
 							},
 						},
 						MaxConn: &types.MaxConn{
