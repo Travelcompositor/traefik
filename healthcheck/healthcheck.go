@@ -221,9 +221,7 @@ func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
         }
     })
 
-	client := netClient
-
-	resp, err := client.Do(req)
+	resp, err := netClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP request failed: %s", err)
 	}
