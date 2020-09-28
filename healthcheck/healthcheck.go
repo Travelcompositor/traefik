@@ -203,16 +203,6 @@ func NewBackendConfig(options Options, backendName string) *BackendConfig {
 }
 
 
-func newNetClient() *http.Client {
-    once.Do(func() {
-        netClient = &http.Client{
-			Timeout:   10 * time.Second,
-			Transport: http.RoundTripper,
-        }
-    })
-
-    return netClient
-}
 
 // checkHealth returns a nil error in case it was successful and otherwise
 // a non-nil error with a meaningful description why the health check failed.
@@ -224,7 +214,14 @@ func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
 
 	req = backend.addHeadersAndHost(req)
 
-	client := newNetClient()
+    once.Do(func() {
+        netClient = &http.Client{
+			Timeout:   10 * time.Second,
+			Transport: backend.Options.Transport
+        }
+    })
+
+	client := netClient
 
 	resp, err := client.Do(req)
 	if err != nil {
