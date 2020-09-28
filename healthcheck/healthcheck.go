@@ -19,6 +19,12 @@ import (
 var singleton *HealthCheck
 var once sync.Once
 
+var (
+    netClientOnce     sync.Once
+    netClient         *http.Client
+)
+
+
 // BalancerHandler includes functionality for load-balancing management.
 type BalancerHandler interface {
 	ServeHTTP(w http.ResponseWriter, req *http.Request)
@@ -196,6 +202,18 @@ func NewBackendConfig(options Options, backendName string) *BackendConfig {
 	}
 }
 
+
+func newNetClient() *http.Client {
+    once.Do(func() {
+        netClient = &http.Client{
+			Timeout:   10 * time.Second,
+			Transport: http.RoundTripper,
+        }
+    })
+
+    return netClient
+}
+
 // checkHealth returns a nil error in case it was successful and otherwise
 // a non-nil error with a meaningful description why the health check failed.
 func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
@@ -206,10 +224,7 @@ func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
 
 	req = backend.addHeadersAndHost(req)
 
-	client := http.Client{
-		Timeout:   backend.requestTimeout,
-		Transport: backend.Options.Transport,
-	}
+	client := newNetClient()
 
 	resp, err := client.Do(req)
 	if err != nil {
