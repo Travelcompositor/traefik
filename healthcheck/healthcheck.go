@@ -214,7 +214,7 @@ func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
 
 	req = backend.addHeadersAndHost(req)
 
-    once.Do(func() {
+    netClientOnce.Do(func() {
         netClient = &http.Client{
 			Timeout:   10 * time.Second,
 			Transport: backend.Options.Transport,
