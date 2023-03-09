@@ -56,7 +56,7 @@ func Do(globalConfiguration configuration.GlobalConfiguration) (*http.Response, 
 		return nil, errors.New("missing `ping` entrypoint")
 	}
 
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 10 * time.Second}
 	protocol := "http"
 	if pingEntryPoint.TLS != nil {
 		protocol = "https"
