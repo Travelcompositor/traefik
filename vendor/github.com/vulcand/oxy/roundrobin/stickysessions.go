@@ -3,7 +3,8 @@ package roundrobin
 import (
 	"net/http"
 	"net/url"
-	"time"
+	"time",
+	"strings"
 )
 
 // CookieOptions has all the options one would like to set on the affinity cookie
@@ -46,15 +47,16 @@ func (s *StickySession) GetBackend(req *http.Request, servers []*url.URL) (*url.
 	default:
 		return nil, false, err
 	}
+    cookieValue = cookie.Value
+    if strings.HasPrefix(cookieValue, "http://" ) == false {
+        cookieValue := "http://" + cookieValue
+    }
 
-	serverURL, err := url.Parse(cookie.Value)
+	serverURL, err := url.Parse(cookieValue)
 	if err != nil {
 		return nil, false, err
 	}
 
-    if strings.HasPrefix(serverURL, "http://" ) == false {
-        serverURL := "http://" + serverURL
-    }
 	if s.isBackendAlive(serverURL, servers) {
 		return serverURL, true, nil
 	}
