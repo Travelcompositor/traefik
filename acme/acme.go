@@ -21,14 +21,14 @@ import (
 	"github.com/containous/mux"
 	"github.com/containous/staert"
 	"github.com/eapache/channels"
-	"github.com/go-acme/lego/certificate"
-	"github.com/go-acme/lego/challenge"
-	"github.com/go-acme/lego/challenge/dns01"
-	"github.com/go-acme/lego/challenge/http01"
-	"github.com/go-acme/lego/lego"
-	legolog "github.com/go-acme/lego/log"
-	"github.com/go-acme/lego/providers/dns"
-	"github.com/go-acme/lego/registration"
+	"github.com/go-acme/lego/v4/certificate"
+	"github.com/go-acme/lego/v4/challenge"
+	"github.com/go-acme/lego/v4/challenge/dns01"
+	"github.com/go-acme/lego/v4/challenge/http01"
+	"github.com/go-acme/lego/v4/lego"
+	legolog "github.com/go-acme/lego/v4/log"
+	"github.com/go-acme/lego/v4/providers/dns"
+	"github.com/go-acme/lego/v4/registration"
 	"github.com/sirupsen/logrus"
 	"github.com/traefik/traefik/cluster"
 	"github.com/traefik/traefik/log"
@@ -46,6 +46,7 @@ var (
 // ACME allows to connect to lets encrypt and retrieve certs
 // Deprecated Please use provider/acme/Provider
 type ACME struct {
+	PreferredChain        string                      `description:"Preferred chain to use."`
 	Email                 string                      `description:"Email address used for registration"`
 	Domains               []types.Domain              `description:"SANs (alternative domains) to each main domain using format: --acme.domains='main.com,san1.com,san2.com' --acme.domains='main.net,san1.net,san2.net'"`
 	Storage               string                      `description:"File or key used for certificates storage."`
@@ -68,7 +69,7 @@ type ACME struct {
 	challengeTLSProvider  *challengeTLSProvider
 	checkOnDemandDomain   func(domain string) bool
 	jobs                  *channels.InfiniteChannel
-	TLSConfig             *tls.Config `description:"TLS config in case wildcard certs are used"`
+	TLSConfig             *tls.Config `description:"TLS config in case wildcard certs are used" hash:"-"`
 	dynamicCerts          *safe.Safe
 	resolvingDomains      map[string]struct{}
 	resolvingDomainsMutex sync.RWMutex
@@ -376,11 +377,13 @@ func (a *ACME) renewACMECertificate(certificateResource *DomainsCertificate) (*C
 		CertStableURL: certificateResource.Certificate.CertStableURL,
 		PrivateKey:    certificateResource.Certificate.PrivateKey,
 		Certificate:   certificateResource.Certificate.Certificate,
-	}, true, OSCPMustStaple)
+	}, true, OSCPMustStaple, a.PreferredChain)
 	if err != nil {
 		return nil, err
 	}
+
 	log.Infof("Renewed certificate from  LE: %+v", certificateResource.Domains)
+
 	return &Certificate{
 		Domain:        renewedCert.Domain,
 		CertURL:       renewedCert.CertURL,
@@ -448,14 +451,18 @@ func (a *ACME) buildACMEClient(account *Account) (*lego.Client, error) {
 
 		err = client.Challenge.SetDNS01Provider(provider,
 			dns01.CondOption(len(a.DNSChallenge.Resolvers) > 0, dns01.AddRecursiveNameservers(a.DNSChallenge.Resolvers)),
-			dns01.CondOption(a.DNSChallenge.DisablePropagationCheck || a.DNSChallenge.DelayBeforeCheck > 0,
-				dns01.AddPreCheck(func(_, _ string) (bool, error) {
-					if a.DNSChallenge.DelayBeforeCheck > 0 {
-						log.Debugf("Delaying %d rather than validating DNS propagation now.", a.DNSChallenge.DelayBeforeCheck)
-						time.Sleep(time.Duration(a.DNSChallenge.DelayBeforeCheck))
-					}
+			dns01.WrapPreCheck(func(domain, fqdn, value string, check dns01.PreCheckFunc) (bool, error) {
+				if a.DNSChallenge.DelayBeforeCheck > 0 {
+					log.Debugf("Delaying %d rather than validating DNS propagation now.", a.DNSChallenge.DelayBeforeCheck)
+					time.Sleep(time.Duration(a.DNSChallenge.DelayBeforeCheck))
+				}
+
+				if a.DNSChallenge.DisablePropagationCheck {
 					return true, nil
-				})),
+				}
+
+				return check(fqdn, value)
+			}),
 		)
 		return client, err
 	}
@@ -703,9 +710,10 @@ func (a *ACME) getDomainsCertificates(domains []string) (*Certificate, error) {
 	bundle := true
 
 	request := certificate.ObtainRequest{
-		Domains:    cleanDomains,
-		Bundle:     bundle,
-		MustStaple: OSCPMustStaple,
+		Domains:        cleanDomains,
+		Bundle:         bundle,
+		MustStaple:     OSCPMustStaple,
+		PreferredChain: a.PreferredChain,
 	}
 
 	cert, err := a.client.Certificate.Obtain(request)
