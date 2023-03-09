@@ -52,8 +52,9 @@ func (s *StickySession) GetBackend(req *http.Request, servers []*url.URL) (*url.
 		return nil, false, err
 	}
 
-    serverURL := "http://" + serverURL
-
+    if strings.HasPrefix(serverURL, "http://" ) == false {
+        serverURL := "http://" + serverURL
+    }
 	if s.isBackendAlive(serverURL, servers) {
 		return serverURL, true, nil
 	}
