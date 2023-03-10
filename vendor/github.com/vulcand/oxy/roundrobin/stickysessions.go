@@ -3,7 +3,7 @@ package roundrobin
 import (
 	"net/http"
 	"net/url"
-	"time",
+	"time"
 	"strings"
 )
 
@@ -47,9 +47,9 @@ func (s *StickySession) GetBackend(req *http.Request, servers []*url.URL) (*url.
 	default:
 		return nil, false, err
 	}
-    cookieValue = cookie.Value
+    cookieValue := cookie.Value
     if strings.HasPrefix(cookieValue, "http://" ) == false {
-        cookieValue := "http://" + cookieValue
+        cookieValue = "http://" + cookie.Value
     }
 
 	serverURL, err := url.Parse(cookieValue)
@@ -74,7 +74,7 @@ func (s *StickySession) StickBackend(backend *url.URL, w *http.ResponseWriter) {
 
 	cookie := &http.Cookie{
 		Name:     s.cookieName,
-		Value:    strings.Replace(backend.String(), "http://", ""),
+		Value:    strings.Replace(backend.String(), "http://", "",1 ),
 		Path:     cp,
 		Domain:   opt.Domain,
 		Expires:  opt.Expires,
