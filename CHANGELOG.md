@@ -1,5 +1,58 @@
 # Change Log
 
+## [v1.7.34](https://github.com/traefik/traefik/tree/v1.7.34) (2021-12-10)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.33...v1.7.34)
+
+**Bug fixes:**
+- **[k8s]** require that secret is a valid PEM ([#8624](https://github.com/traefik/traefik/pull/8624) by [jr0d](https://github.com/jr0d))
+
+## [v1.7.33](https://github.com/traefik/traefik/tree/v1.7.33) (2021-10-07)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.32...v1.7.33)
+
+**Bug fixes:**
+- **[acme]** acme: fix non-cluster mode ([#8501](https://github.com/traefik/traefik/pull/8501) by [ldez](https://github.com/ldez))
+
+## [v1.7.32](https://github.com/traefik/traefik/tree/v1.7.32) (2021-10-06)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.31...v1.7.32)
+
+**Bug fixes:**
+- **[acme]** acme: add missing preferred chain ([#8495](https://github.com/traefik/traefik/pull/8495) by [ldez](https://github.com/ldez))
+
+## [v1.7.31](https://github.com/traefik/traefik/tree/v1.7.31) (2021-10-04)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.30...v1.7.31)
+
+**Bug fixes:**
+- **[acme,k8s]** acme: add support of preferredchain in Traefik v1 ([#8482](https://github.com/traefik/traefik/pull/8482) by [ldez](https://github.com/ldez))
+
+## [v1.7.30](https://github.com/traefik/traefik/tree/v1.7.30) (2021-04-07)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.29...v1.7.30)
+
+**Bug fixes:**
+- **[metrics]** Prometheus: fixing prom Handler to use the custom registry ([#8040](https://github.com/traefik/traefik/pull/8040) by [tomMoulard](https://github.com/tomMoulard))
+
+## [v1.7.29](https://github.com/traefik/traefik/tree/v1.7.29) (2021-03-22)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.28...v1.7.29)
+
+- Update to go1.16 ([#7967](https://github.com/traefik/traefik/pull/7967) by [ldez](https://github.com/ldez))
+
+## [v1.7.28](https://github.com/traefik/traefik/tree/v1.7.28) (2021-01-13)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.26...v1.7.28)
+
+**Bug fixes:**
+- **[middleware,tracing]** Do not SetError on tracing event when whitelist allowed request ([#7174](https://github.com/traefik/traefik/pull/7174) by [LordGaav](https://github.com/LordGaav))
+- **[servicefabric]** Fix stickiness support in Service Fabric. ([#7667](https://github.com/traefik/traefik/pull/7667) by [tpayne84](https://github.com/tpayne84))
+
+**Documentation:**
+- **[acme]** docs: fix language &#34;if challenge is not known&#34; ([#7718](https://github.com/traefik/traefik/pull/7718) by [amosshapira](https://github.com/amosshapira))
+- Prepare release v1.7.27 ([#7755](https://github.com/traefik/traefik/pull/7755) by [rtribotte](https://github.com/rtribotte))
+- Update copyright year for 2021 ([#7753](https://github.com/traefik/traefik/pull/7753) by [rtribotte](https://github.com/rtribotte))
+- Fix typo &#34;CA&#39;s&#34; instead of &#34;CA:s&#34; ([#7315](https://github.com/traefik/traefik/pull/7315) by [amosshapira](https://github.com/amosshapira))
+
+## [v1.7.27](https://github.com/traefik/traefik/tree/v1.7.27) (2021-01-13)
+[All Commits](https://github.com/traefik/traefik/compare/v1.7.26...v1.7.27)
+
+Release canceled due to a bad tag.
+
 ## [v1.7.26](https://github.com/traefik/traefik/tree/v1.7.26) (2020-07-28)
 [All Commits](https://github.com/traefik/traefik/compare/v1.7.25...v1.7.26)
 
