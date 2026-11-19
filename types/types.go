@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/abronan/valkeyrie/store"
 	"github.com/containous/flaeg"
@@ -51,10 +52,36 @@ type LoadBalancer struct {
 
 // Stickiness holds sticky session configuration.
 type Stickiness struct {
-	CookieName string `json:"cookieName,omitempty"`
-	Secure     bool   `json:"secure,omitempty"`
-	HTTPOnly   bool   `json:"httpOnly,omitempty"`
-	SameSite   string `json:"sameSite,omitempty"`
+	CookieName string       `json:"cookieName,omitempty"`
+	Secure     bool         `json:"secure,omitempty"`
+	HTTPOnly   bool         `json:"httpOnly,omitempty"`
+	SameSite   string       `json:"sameSite,omitempty"`
+	MaxAge     CookieMaxAge `toml:"maxAge" json:"-"`
+}
+
+// CookieMaxAge is a sticky cookie lifetime in seconds. Its zero value uses the one-hour default.
+type CookieMaxAge int
+
+// UnmarshalTOML reads a Go duration that fits in an HTTP cookie's integer MaxAge.
+func (age *CookieMaxAge) UnmarshalTOML(value interface{}) error {
+	text, _ := value.(string)
+	duration, err := time.ParseDuration(text)
+	// Converting back catches fractional seconds and int overflow on 32-bit builds.
+	seconds := CookieMaxAge(duration / time.Second)
+	if err != nil || seconds <= 0 || time.Duration(seconds)*time.Second != duration {
+		log.Warnf("Invalid sticky cookie maxAge %#v. Expected a positive duration in whole seconds. Using 1h.", value)
+		seconds = 0
+	}
+	*age = seconds
+	return nil
+}
+
+// Seconds returns the lifetime to emit in the Set-Cookie header.
+func (age CookieMaxAge) Seconds() int {
+	if age == 0 {
+		return int(time.Hour / time.Second)
+	}
+	return int(age)
 }
 
 // CircuitBreaker holds circuit breaker configuration.

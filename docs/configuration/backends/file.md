@@ -34,6 +34,8 @@ Traefik can be configured with a file.
         secure = true
         httpOnly = true
         sameSite = "foobar"
+        # Optional cookie lifetime. The default is 1h.
+        maxAge = "30m"
 
     [backends.backend1.maxConn]
       amount = 10

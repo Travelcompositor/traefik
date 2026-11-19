@@ -354,3 +354,29 @@ entryPoints = ["https"]
 	require.Equal(t, "CONTENT", configuration.TLS[0].Certificate.CertFile.String())
 	require.Equal(t, "CONTENT", configuration.TLS[0].Certificate.KeyFile.String())
 }
+
+func TestStickyCookieMaxAge(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		setting string
+		seconds int
+	}{
+		{"omitted", "", 3600},
+		{"override", `maxAge = "30m"`, 1800},
+		{"whole seconds", `maxAge = "0.5m"`, 30},
+		{"zero", `maxAge = "0s"`, 3600},
+		{"negative", `maxAge = "-2h"`, 3600},
+		{"fractional seconds", `maxAge = "1.5s"`, 3600},
+		{"invalid duration", `maxAge = "tomorrow"`, 3600},
+		{"empty", `maxAge = ""`, 3600},
+		{"missing units", `maxAge = 1800`, 3600},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			p := &Provider{}
+			p.Filename = createRandomFile(t, t.TempDir(), "[backends.checkout.loadBalancer.stickiness]\n"+test.setting).Name()
+			config, err := p.BuildConfiguration()
+			require.NoError(t, err)
+			assert.Equal(t, test.seconds, config.Backends["checkout"].LoadBalancer.Stickiness.MaxAge.Seconds())
+		})
+	}
+}

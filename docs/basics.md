@@ -440,6 +440,11 @@ The default cookie name is an abbreviation of a sha1 (ex: `_1d52e`).
 On subsequent requests, the client will be directed to the backend stored in the cookie if it is still healthy.
 If not, a new backend will be assigned.
 
+Sticky cookies expire one hour after Traefik issues them. Requests that reuse a valid cookie keep its original expiration.
+When Traefik assigns a replacement backend, it issues a new cookie with the full lifetime.
+The file provider supports a per-backend `maxAge` setting. Use a Go duration that represents a positive whole number of seconds, such as `"90s"`, `"30m"`, or `"2h"`.
+If the value is invalid, Traefik logs a warning and uses the one-hour default.
+
 ```toml
 [backends]
   [backends.backend1]
@@ -452,6 +457,9 @@ If not, a new backend will be assigned.
     # Default: a sha1 (6 chars)
     #
     #  cookieName = "my_cookie"
+
+    # Optional cookie lifetime for this backend
+    #  maxAge = "30m"
 
     # Customize secure option
     #

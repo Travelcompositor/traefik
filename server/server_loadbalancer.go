@@ -190,6 +190,7 @@ func newStickySession(cookieName string, stickiness *types.Stickiness) *roundrob
 		HTTPOnly: stickiness.HTTPOnly,
 		Secure:   stickiness.Secure,
 		SameSite: convertSameSite(stickiness.SameSite),
+		MaxAge:   stickiness.MaxAge.Seconds(),
 	}
 
 	return roundrobin.NewStickySessionWithOptions(cookieName, opts)
